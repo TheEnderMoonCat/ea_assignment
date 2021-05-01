@@ -1,62 +1,17 @@
 {% extends 'base.html' %}
 {% import 'bootstrap/wtf.html' as wtf %}
 
-
 {% block app_content %}
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-
-    <div class="container custom-container-width">
-        <b>Hi there,</b> here's what's trending today<br>
-            <div class="row">
-                <div class="col">
-                    <a href="https://www.groupon.com/deals/dopeboo-com" style="color:black;">
-                        <div class="card" style="width: 320px ;height: 200px; display: inline-block">
-                            <img class="card-img-top" src="//img.grouponcdn.com/iam/iZxECEWwrbZH76YxBkqM/ao-2048x1229/v1/c349x211.webp" alt="Card image cap">
-                            <div class="card-body">
-                                <h5 class="card-title">DopeBoo.com</h5>
-                                <p class="card-text">
-                                    North Wells Street, Chicago 3.8 mi<br>
-                                    <S>$349</S> &nbsp; <b><font color="green">$175<font size="1"> 49% OFF</font></font></b><br>
-                                    Smoke Accessory
-
-                                </p>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="https://www.groupon.com/deals/ga-bk-springhill-stes-chicago-o-hare?deal_option=9d3cafee-7fb1-40a7-b63c-c21441eee11d" style="color:black;">
-                        <div class="card" style="width: 350px ;height: 200px; display: inline-block">
-                            <img class="card-img-top" src="//img.grouponcdn.com/deal/35euAtjjGB5XJ6Jcmc3UZ74s7r51/35-4256x2832/v1/c349x211.webp" alt="Card image cap">
-                            <div class="card-body">
-                                <h5 class="card-title">SpringHill Suites Chicago O'Hare - Chicago, IL</h5>
-                                <p class="card-text">
-                                    Chicago, IL 13.2mi<br>
-                                    <s>$104</s> <font color="green">From <b>$75</b>/nt <font size="1">27% OFF</font> </font>
-                                </p>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="https://www.groupon.com/deals/park-n-fly-nat-22-27?deal_option=2cb119fb-3cc1-4fe7-9d19-aec57d59b60e" style="color:black">
-                        <div class="card" style="width: 350px ;height: 200px; display: inline-block">
-                            <img class="card-img-top" src="//img.grouponcdn.com/deal/3cFoxCL8dw4zHb1HL66XWG88EWeM/3c-6240x4160/v1/c349x211.webp"  alt="Card image cap">
-                            <div class="card-body">
-                                <h5 class="card-title">Park 'N Fly</h5>
-                                <p class="card-text">
-                                    5200 West 47th Street, Chicago 6.1mi<br>
-                                    <s>$50.74</s> <font color="green"><b>$35.52</b> <font size="1">29% OFF</font> </font>
-                                </p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
+    <h1>{{ _('Sign In') }}</h1>
+    <div class="row">
+        <div class="col-md-4">
+            {{ wtf.quick_form(form) }}
+        </div>
     </div>
-
-
-
+    <br>
+    <p>{{ _('New User?') }} <a href="{{ url_for('register') }}">{{ _('Click to Register!') }}</a></p>
+    <p>
+        {{ _('Forgot Your Password?') }}
+        <a href="{{ url_for('reset_password_request') }}">{{ _('Click to Reset It') }}</a>
+    </p>
 {% endblock %}

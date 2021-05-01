@@ -6,7 +6,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 from app import app, db, login
 
-
 followers = db.Table(
     'followers',
     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
@@ -20,7 +19,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
-    about_me = db.Column(db.String(140))
+    admin = db.Column(db.Boolean, default="false")
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     followed = db.relationship(
         'User', secondary=followers,
@@ -89,3 +88,37 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
+
+
+class products(db.Model):
+    PID = db.Column(db.Integer, primary_key=True)
+    PN = db.Column(db.String(64))
+    PURL = db.Column(db.String(128))
+    URL = db.Column(db.String(128))
+    loc = db.Column(db.String(64))
+    Price = db.Column(db.Float)
+    UPPrice = db.Column(db.Float)
+    Intro = db.Column(db.Text)
+    Weight = db.Column(db.Integer, default=0)
+
+    def __init__(self, PN, PURL, URL, loc, Price, UPPrice, Intro):
+        self.PN = PN
+        self.PURL = PURL
+        self.URL = URL
+        self.loc = loc
+        self.Price = Price
+        self.UPPrice = UPPrice
+        self.Intro = Intro
+
+
+    def __repr__(self):
+        return '<products {}>'.format(self.PN)
+
+
+class companys(db.Model):
+    CID = db.Column(db.Integer, primary_key=True)
+    CName = db.Column(db.String(32))
+    CURL = db.Column(db.String(128))
+
+    def __repr__(self):
+        return '<companys {}>'.format(self.CName)

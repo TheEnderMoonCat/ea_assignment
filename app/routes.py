@@ -4,9 +4,9 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from flask_babel import _, get_locale
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, \
-    ResetPasswordRequestForm, ResetPasswordForm
-from app.models import User, Post
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, \
+    ResetPasswordRequestForm, ResetPasswordForm, ProductForm, CompanysForm
+from app.models import User, products, companys
 from app.email import send_password_reset_email
 
 
@@ -17,54 +17,34 @@ def before_request():
         db.session.commit()
     g.locale = str(get_locale())
 
-
 @app.route('/', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
-@login_required
 def index():
-    form = PostForm()
-    if form.validate_on_submit():
-        post = Post(body=form.post.data, author=current_user)
-        db.session.add(post)
-        db.session.commit()
-        flash(_('Your post is now live!'))
-        return redirect(url_for('index'))
-    page = request.args.get('page', 1, type=int)
-    posts = current_user.followed_posts().paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
-    next_url = url_for('index', page=posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('index', page=posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('index.html', title=_('Home'), form=form,
-                           posts=posts.items, next_url=next_url,
-                           prev_url=prev_url)
-
-
-@app.route('/explore')
-@login_required
-def explore():
-    page = request.args.get('page', 1, type=int)
-    posts = Post.query.order_by(Post.timestamp.desc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
-    next_url = url_for('explore', page=posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('explore', page=posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('index.html', title=_('Explore'),
-                           posts=posts.items, next_url=next_url,
-                           prev_url=prev_url)
+    productsout1 = products.query.filter_by(PID='1').all()
+    productsout2 = products.query.filter_by(PID='2').all()
+    productsout3 = products.query.filter_by(PID='3').all()
+    row1 = companys.query.filter_by(CID='1').all()
+    row2 = companys.query.filter_by(CID='2').all()
+    row3 = companys.query.filter_by(CID='3').all()
+    row4 = companys.query.filter_by(CID='4').all()
+    row5 = companys.query.filter_by(CID='5').all()
+    row6 = companys.query.filter_by(CID='6').all()
+    tests = ['base_body.html', 'base.html']
+    print(productsout1)
+    print(row1)
+    return render_template(tests,
+                           productsout1=productsout1,
+                           productsout2=productsout2,
+                           productsout3=productsout3,
+                           row1=row1, row2=row2, row3=row3, row4=row4, row5=row5, row6=row6)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(email=form.email.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash(_('Invalid username or password'))
+            flash(_('Invalid email or password'))
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
@@ -73,10 +53,17 @@ def login():
         return redirect(next_page)
     return render_template('login.html', title=_('Sign In'), form=form)
 
+@app.route('/admin/<username>')
+@login_required
+def admin():
+    admin = User.query.filter_by(admin='True').first_or_404()
+    return render_template('base_body.html', admin=admin)
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
+    flash('You were logged out.')
     return redirect(url_for('index'))
 
 
@@ -91,7 +78,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash(_('Congratulations, you are now a registered user!'))
-        return redirect(url_for('login'))
+        return redirect(url_for('index'))
     return render_template('register.html', title=_('Register'), form=form)
 
 
@@ -131,15 +118,7 @@ def reset_password(token):
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    page = request.args.get('page', 1, type=int)
-    posts = user.posts.order_by(Post.timestamp.desc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
-    next_url = url_for('user', username=user.username, page=posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('user', username=user.username, page=posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('user.html', user=user, posts=posts.items,
-                           next_url=next_url, prev_url=prev_url)
+    return render_template('base_body.html', user=user)
 
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
@@ -189,3 +168,40 @@ def unfollow(username):
     db.session.commit()
     flash(_('You are not following %(username)s.', username=username))
     return redirect(url_for('user', username=username))
+
+
+@app.route('/INProduct', methods=['GET', 'POST'])
+def INproduct():
+    inproduct = ProductForm()
+    if inproduct.validate_on_submit():
+        Product = products(PN=inproduct.PN.data,
+                           PURL=inproduct.PURL.data,
+                           URL=inproduct.URL.data,
+                           loc=inproduct.loc.data,
+                           Price=inproduct.Price.data,
+                           UPPrice=inproduct.UPPrice.data,
+                           Intro=inproduct.Intro.data)
+        db.session.add(Product)
+        db.session.commit()
+        flash(_('Success!'))
+        return redirect(url_for('INproduct'))
+    return render_template('product.html', title=_('ProductForm'), inproduct=inproduct)
+
+@app.route('/Companys', methods=['GET','POST'])
+def Company():
+    company = CompanysForm()
+    if company.validate_on_submit():
+        Company = companys(CName=company.CName.data,
+                           CURL=company.CURL.data)
+        db.session.add(Company)
+        db.session.commit()
+        flash(_('Success!'))
+        return redirect(url_for('Company'))
+    return render_template('companys.html', title=_('Add Companys'), company=company)
+
+
+
+
+
+
+

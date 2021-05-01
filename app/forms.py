@@ -4,11 +4,11 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, \
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, \
     Length
 from flask_babel import _, lazy_gettext as _l
-from app.models import User
+from app.models import User, products, companys
 
 
 class LoginForm(FlaskForm):
-    username = StringField(_l('Username'), validators=[DataRequired()])
+    email = StringField(_l('Email'), validators=[DataRequired()])
     password = PasswordField(_l('Password'), validators=[DataRequired()])
     remember_me = BooleanField(_l('Remember Me'))
     submit = SubmitField(_l('Sign In'))
@@ -18,9 +18,7 @@ class RegistrationForm(FlaskForm):
     username = StringField(_l('Username'), validators=[DataRequired()])
     email = StringField(_l('Email'), validators=[DataRequired(), Email()])
     password = PasswordField(_l('Password'), validators=[DataRequired()])
-    password2 = PasswordField(
-        _l('Repeat Password'), validators=[DataRequired(),
-                                           EqualTo('password')])
+    password2 = PasswordField(_l('Repeat Password'), validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField(_l('Register'))
 
     def validate_username(self, username):
@@ -67,3 +65,30 @@ class EditProfileForm(FlaskForm):
 class PostForm(FlaskForm):
     post = TextAreaField(_l('Say something'), validators=[DataRequired()])
     submit = SubmitField(_l('Submit'))
+
+
+class ProductForm(FlaskForm):
+    PN = StringField(_l('Product Name'), validators=[DataRequired()])
+    PURL = StringField(_l('PhotoURL'), validators=[DataRequired()])
+    URL = StringField(_l('Website URL'), validators=[DataRequired()])
+    loc = StringField (_l('Location'), validators=[DataRequired()])
+    Price = StringField(_l('Price'), validators=[DataRequired()])
+    UPPrice = StringField(_l('UPPrice'), validators=[DataRequired()])
+    Intro = TextAreaField(_l('Introduction'), validators=[DataRequired()])
+    submit = SubmitField(_l('Submit'))
+
+    def validate_PN(self, PN):
+        ProductName = products.query.filter_by(PN=PN.data).first()
+        if ProductName is not None:
+            raise ValidationError(_('Please use a different Product Name.'))
+
+
+class CompanysForm(FlaskForm):
+    CName = StringField(_l('Company Name'), validators=[DataRequired()])
+    CURL = StringField(_l('Company URL'), validators=[DataRequired()])
+    submit = SubmitField(_l('Submit'))
+
+    def validate_CName(self, CName):
+        CompanyName = companys.query.filter_by(CName=CName.data).first()
+        if CompanyName is not None:
+            raise ValidationError(_('Please use a different Company Name.'))
